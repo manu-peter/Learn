@@ -1,0 +1,74 @@
+version: '3.8'
+
+services:
+  # Database - Official Postgres Image
+  postgres:
+    image: postgres:15-alpine
+    container_name: postgres
+    environment:
+      POSTGRES_DB: tasksdb
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: password123
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin -d tasksdb"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Backend API - Using Node.js Official Image
+  backend:
+    image: node:18-alpine
+    container_name: backend
+    working_dir: /app
+    volumes:
+      - ./backend:/app
+    command: sh -c "npm install && node server.js"
+    environment:
+      DB_HOST: postgres
+      DB_NAME: tasksdb
+      DB_USER: admin
+      DB_PASSWORD: password123
+    ports:
+      - "5000:5000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  # Database Service - Using Python Official Image
+  db-service:
+    image: python:3.11-slim
+    container_name: db-service
+    working_dir: /app
+    volumes:
+      - ./db-service:/app
+    command: sh -c "pip install -r requirements.txt && uvicorn main:app --host 0.0.0.0 --port 8000"
+    environment:
+      DB_HOST: postgres
+      DB_NAME: tasksdb
+      DB_USER: admin
+      DB_PASSWORD: password123
+    ports:
+      - "8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  # Frontend - Using Nginx Official Image  
+  frontend:
+    image: nginx:alpine
+    container_name: frontend
+    volumes:
+      - ./frontend:/usr/share/nginx/html
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+
+volumes:
+  postgres_data:

@@ -1,0 +1,18 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - postgres.yaml
+  - backend-deploy.yaml
+  - frontend-deploy.yaml
+
+configMapGenerator:
+  - name: backend-code
+    files:
+      - server.js
+  - name: frontend-html
+    files:
+      - index.html
+  - name: nginx-config
+    files:
+      - nginx.conf
