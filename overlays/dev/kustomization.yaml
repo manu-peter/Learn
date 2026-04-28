@@ -6,4 +6,14 @@ namespace: dev
 resources:
   - ../../base
 
-namePrefix: dev-
+configMapGenerator:
+  - name: nginx-config
+    behavior: replace
+    files:
+      - nginx.conf
+
+secretGenerator:
+  - name: db-secret
+    behavior: create
+    literals:
+      - password=password123
