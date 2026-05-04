@@ -5,6 +5,7 @@ metadata:
 data:
   db-name: tasksdb
   db-user: admin
+  db-host: postgres
 ---
 apiVersion: apps/v1
 kind: Deployment

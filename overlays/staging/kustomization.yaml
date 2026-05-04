@@ -6,4 +6,17 @@ namespace: staging
 resources:
   - ../../base
 
-namePrefix: staging-
+configMapGenerator:
+  - name: nginx-config
+    behavior: replace
+    files:
+      - nginx.conf
+
+secretGenerator:
+  - name: db-secret
+    behavior: create
+    literals:
+      - password=password123
+
+patches:
+  - path: patch-service.yaml
