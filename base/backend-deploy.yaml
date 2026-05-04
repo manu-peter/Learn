@@ -13,19 +13,12 @@ spec:
         app: backend
     spec:
       securityContext:
-        runAsUser: 1000
-        runAsGroup: 1000
-        fsGroup: 1000
-      initContainers:
-      - name: install-deps
-        image: node:18-alpine
-        command: ['sh', '-c', 'cd /app && npm init -y && npm install express pg cors']
-        volumeMounts:
-        - name: app-volume
-          mountPath: /app
+        runAsUser: 1001
+        runAsGroup: 1001
+        fsGroup: 1001
       containers:
       - name: backend
-        image: node:18-alpine
+        image: manu144/learn:v1
         workingDir: /app
         command: ["node", "server.js"]
         ports:
@@ -47,8 +40,6 @@ spec:
               name: db-secret
               key: password
         volumeMounts:
-        - name: app-volume
-          mountPath: /app
         - name: backend-code
           mountPath: /app/server.js
           subPath: server.js
@@ -56,8 +47,6 @@ spec:
           allowPrivilegeEscalation: false
           runAsNonRoot: true
       volumes:
-      - name: app-volume
-        emptyDir: {}
       - name: backend-code
         configMap:
           name: backend-code
