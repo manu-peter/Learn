@@ -1,0 +1,38 @@
+name: Build and Deploy
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - 'docker/**'
+      - 'base/server.js'
+
+jobs:
+  build:
+    runs-on: self-hosted
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Get short SHA
+        id: vars
+        run: echo "SHORT_SHA=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+      
+      - name: Build Docker image
+        run: |
+          cd docker/backend
+          docker build -t manu144/learn:${{ steps.vars.outputs.SHORT_SHA }} .
+      
+      - name: Push to Docker Hub
+        run: |
+          docker push manu144/learn:${{ steps.vars.outputs.SHORT_SHA }}
+      
+      - name: Update K8s manifest
+        run: |
+          sed -i "s|manu144/learn:.*|manu144/learn:${{ steps.vars.outputs.SHORT_SHA }}|g" base/backend-deploy.yaml
+          git config user.email "ci@github.com"
+          git config user.name "CI Bot"
+          git add base/backend-deploy.yaml
+          git commit -m "Update image tag to ${{ steps.vars.outputs.SHORT_SHA }}"
+          git push
