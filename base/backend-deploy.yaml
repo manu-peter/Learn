@@ -19,8 +19,6 @@ spec:
       containers:
       - name: backend
         image: manu144/learn:v1
-        workingDir: /app
-        command: ["node", "server.js"]
         ports:
         - containerPort: 5000
         env:
@@ -39,17 +37,9 @@ spec:
             secretKeyRef:
               name: db-secret
               key: password
-        volumeMounts:
-        - name: backend-code
-          mountPath: /app/server.js
-          subPath: server.js
         securityContext:
           allowPrivilegeEscalation: false
           runAsNonRoot: true
-      volumes:
-      - name: backend-code
-        configMap:
-          name: backend-code
 ---
 apiVersion: v1
 kind: Service
