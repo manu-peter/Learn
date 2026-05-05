@@ -22,6 +22,11 @@ spec:
         ports:
         - containerPort: 5000
         env:
+        - name: DB_HOST
+          valueFrom:
+            configMapKeyRef:
+              name: postgres-config
+              key: db-host
         - name: DB_NAME
           valueFrom:
             configMapKeyRef:
