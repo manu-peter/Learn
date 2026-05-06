@@ -4,6 +4,7 @@ kind: Kustomization
 resources:
   - postgres.yaml
   - backend-deploy.yaml
+  - backend-v2-deploy.yaml
   - frontend-deploy.yaml
 
 configMapGenerator:
