@@ -17,6 +17,11 @@ app.get('/health', (req, res) => {
   res.json({ status: 'healthy', service: 'backend-api', version: 'v3-canary' });
 });
 
+// New endpoint to show version info
+app.get('/api/info', (req, res) => {
+  res.json({ version: 'v3-canary', message: '🚀 You hit the CANARY version! This is the new v3!' });
+});
+
 app.get('/api/tasks', async (req, res) => {
   try {
     const result = await pool.query('SELECT * FROM tasks ORDER BY id DESC');
