@@ -6,6 +6,7 @@ resources:
   - backend-deploy.yaml
   - backend-v2-deploy.yaml
   - frontend-deploy.yaml
+  - frontend-v2-deploy.yaml
 
 configMapGenerator:
   - name: backend-code
@@ -14,6 +15,9 @@ configMapGenerator:
   - name: frontend-html
     files:
       - index.html
+  - name: frontend-html-v3
+    files:
+      - index-v3.html
   - name: nginx-config
     files:
       - nginx.conf

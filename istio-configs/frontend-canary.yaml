@@ -1,0 +1,33 @@
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: frontend-canary
+  namespace: dev
+spec:
+  hosts:
+  - frontend
+  http:
+  - route:
+    - destination:
+        host: frontend
+        subset: v2
+      weight: 90
+    - destination:
+        host: frontend
+        subset: v3
+      weight: 10
+---
+apiVersion: networking.istio.io/v1beta1
+kind: DestinationRule
+metadata:
+  name: frontend-subsets
+  namespace: dev
+spec:
+  host: frontend
+  subsets:
+  - name: v2
+    labels:
+      version: v2
+  - name: v3
+    labels:
+      version: v3
