@@ -11,9 +11,3 @@ configMapGenerator:
     behavior: replace
     files:
       - nginx.conf
-
-secretGenerator:
-  - name: db-secret
-    behavior: create
-    literals:
-      - password=password123

@@ -17,3 +17,11 @@ configMapGenerator:
   - name: nginx-config
     files:
       - nginx.conf
+
+generatorOptions:
+  disableNameSuffixHash: true
+
+secretGenerator:
+  - name: db-secret
+    literals:
+      - password=password123
