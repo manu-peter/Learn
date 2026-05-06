@@ -7,14 +7,14 @@ app.use(cors());
 app.use(express.json());
 
 const pool = new Pool({
-  host: process.env.DB_HOST || 'dev-postgres',
+  host: process.env.DB_HOST || 'postgres',
   database: process.env.DB_NAME || 'tasksdb',
   user: process.env.DB_USER || 'admin',
   password: process.env.DB_PASSWORD || 'password123'
 });
 
 app.get('/health', (req, res) => {
-  res.json({ status: 'healthy', service: 'backend-api', version: 'v2-ci' });
+  res.json({ status: 'healthy', service: 'backend-api', version: 'v3-canary' });
 });
 
 app.get('/api/tasks', async (req, res) => {
