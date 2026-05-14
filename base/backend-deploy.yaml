@@ -19,7 +19,7 @@ spec:
         fsGroup: 1001
       containers:
       - name: backend
-        image: manu144/learn:42663c0
+        image: manu144/learn:81f6bc9
         ports:
         - containerPort: 5000
         env:
