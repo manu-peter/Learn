@@ -1,31 +1,25 @@
 const express = require('express');
-const { Pool } = require('pg');
+const axios = require('axios');
 const cors = require('cors');
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
-const pool = new Pool({
-  host: process.env.DB_HOST || 'postgres',
-  database: process.env.DB_NAME || 'tasksdb',
-  user: process.env.DB_USER || 'admin',
-  password: process.env.DB_PASSWORD || 'password123'
-});
+const DB_API_URL = process.env.DB_API_URL || 'http://db-api:8000';
 
 app.get('/health', (req, res) => {
   res.json({ status: 'healthy', service: 'backend-api', version: 'v3-canary' });
 });
 
-// New endpoint to show version info
 app.get('/api/info', (req, res) => {
   res.json({ version: 'v3-canary', message: '🚀 You hit the CANARY version! This is the new v3!' });
 });
 
 app.get('/api/tasks', async (req, res) => {
   try {
-    const result = await pool.query('SELECT * FROM tasks ORDER BY id DESC');
-    res.json(result.rows);
+    const response = await axios.get(`${DB_API_URL}/tasks`);
+    res.json(response.data);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -34,11 +28,8 @@ app.get('/api/tasks', async (req, res) => {
 app.post('/api/tasks', async (req, res) => {
   try {
     const { title, description } = req.body;
-    const result = await pool.query(
-      'INSERT INTO tasks (title, description) VALUES ($1, $2) RETURNING *',
-      [title, description]
-    );
-    res.status(201).json(result.rows[0]);
+    const response = await axios.post(`${DB_API_URL}/tasks`, { title, description });
+    res.status(201).json(response.data);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

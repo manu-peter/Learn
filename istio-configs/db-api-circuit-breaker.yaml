@@ -1,0 +1,17 @@
+apiVersion: networking.istio.io/v1beta1
+kind: DestinationRule
+metadata:
+  name: db-api-circuit-breaker
+  namespace: dev
+spec:
+  host: db-api
+  trafficPolicy:
+    connectionPool:
+      http:
+        http1MaxPendingRequests: 5
+        maxRequestsPerConnection: 2
+    outlierDetection:
+      consecutive5xxErrors: 2
+      interval: 10s
+      baseEjectionTime: 30s
+      maxEjectionPercent: 100
