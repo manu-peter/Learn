@@ -12,11 +12,5 @@ configMapGenerator:
     files:
       - nginx.conf
 
-secretGenerator:
-  - name: db-secret
-    behavior: create
-    literals:
-      - password=password123
-
 patches:
   - path: patch-service.yaml
