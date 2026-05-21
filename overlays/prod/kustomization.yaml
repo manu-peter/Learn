@@ -12,17 +12,10 @@ configMapGenerator:
     files:
       - nginx.conf
 
-secretGenerator:
-  - name: db-secret
-    behavior: create
-    literals:
-      - password=password123
-
 patches:
   - path: patch-service.yaml
+  - path: patch-frontend.yaml
 
 replicas:
   - name: backend
-    count: 2
-  - name: frontend
     count: 2

@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>TaskFlow Pro</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Helvetica Neue', Arial, sans-serif; background: #141414; color: white; min-height: 100vh; }
+        .header { background: linear-gradient(180deg, rgba(0,0,0,0.9) 0%, transparent 100%); padding: 20px 40px; position: fixed; width: 100%; z-index: 100; }
+        .logo { font-size: 28px; font-weight: bold; color: #E50914; letter-spacing: -1px; }
+        .logo span { color: white; }
+        .container { max-width: 800px; margin: 0 auto; padding: 100px 20px 40px; }
+        .hero { background: linear-gradient(135deg, #E50914 0%, #831010 100%); padding: 40px; border-radius: 16px; margin-bottom: 30px; text-align: center; }
+        .hero h1 { font-size: 36px; margin-bottom: 10px; }
+        .hero p { opacity: 0.8; font-size: 16px; }
+        .input-group { display: flex; gap: 10px; margin-bottom: 30px; }
+        input, textarea { flex: 1; padding: 14px 18px; border: 2px solid #333; border-radius: 8px; background: #1a1a1a; color: white; font-size: 16px; transition: border 0.3s; }
+        input:focus, textarea:focus { outline: none; border-color: #E50914; }
+        button { background: #E50914; color: white; border: none; padding: 14px 28px; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; transition: all 0.3s; white-space: nowrap; }
+        button:hover { background: #ff0f1f; transform: translateY(-2px); box-shadow: 0 8px 20px rgba(229, 9, 20, 0.3); }
+        .task-card { background: #1a1a1a; border: 1px solid #333; padding: 20px; margin: 12px 0; border-radius: 12px; transition: transform 0.3s, box-shadow 0.3s; }
+        .task-card:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0,0,0,0.5); border-color: #E50914; }
+        .task-card h3 { color: #E50914; margin-bottom: 8px; font-size: 18px; }
+        .task-card p { color: #aaa; margin-bottom: 8px; }
+        .task-card small { color: #666; }
+        .badge { background: #E50914; color: white; padding: 4px 12px; border-radius: 20px; font-size: 11px; margin-left: 10px; }
+        .empty-state { text-align: center; padding: 60px 20px; color: #555; }
+        .empty-state .icon { font-size: 60px; margin-bottom: 20px; }
+        .footer { text-align: center; padding: 40px; color: #555; font-size: 14px; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo">TASK<span>FLOW</span> <span class="badge">PRO</span></div>
+    </div>
+    <div class="container">
+        <div class="hero">
+            <h1>🚀 Production Task Manager</h1>
+            <p>Enterprise-grade task management with Istio Service Mesh</p>
+        </div>
+        <div class="input-group">
+            <input type="text" id="title" placeholder="What needs to be done?">
+            <button onclick="addTask()">Add Task</button>
+        </div>
+        <div id="tasks"><div class="empty-state"><div class="icon">📋</div><p>No tasks yet. Start by adding one!</p></div></div>
+    </div>
+    <div class="footer">TaskFlow Pro © 2026 | Powered by Kubernetes & Istio</div>
+    <script>
+        async function loadTasks() {
+            const resp = await fetch('/api/tasks');
+            const tasks = await resp.json();
+            const el = document.getElementById('tasks');
+            if (tasks.length === 0) {
+                el.innerHTML = '<div class="empty-state"><div class="icon">📋</div><p>No tasks yet. Start by adding one!</p></div>';
+                return;
+            }
+            el.innerHTML = tasks.map(t => `
+                <div class="task-card">
+                    <h3>${t.title}</h3>
+                    <p>${t.description || 'No description'}</p>
+                    <small>📅 ${new Date(t.created_at).toLocaleString()}</small>
+                </div>
+            `).join('');
+        }
+        async function addTask() {
+            const title = document.getElementById('title').value;
+            if (!title) return;
+            await fetch('/api/tasks', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({title, description: ''})
+            });
+            document.getElementById('title').value = '';
+            loadTasks();
+        }
+        loadTasks();
+    </script>
+</body>
+</html>
