@@ -14,9 +14,24 @@ spec:
     spec:
       containers:
       - name: frontend
-        image: jellyfin/jellyfin:latest
+        image: nginxinc/nginx-unprivileged:alpine
         ports:
-        - containerPort: 8096
+        - containerPort: 8080
+        volumeMounts:
+        - name: html
+          mountPath: /usr/share/nginx/html
+        - name: nginx-config
+          mountPath: /etc/nginx/conf.d
+      volumes:
+      - name: html
+        configMap:
+          name: frontend-html-prod
+          items:
+          - key: index-prod.html
+            path: index.html
+      - name: nginx-config
+        configMap:
+          name: nginx-config
 ---
 apiVersion: v1
 kind: Service
@@ -27,6 +42,6 @@ spec:
   selector:
     app: frontend
   ports:
-  - port: 8096
+  - port: 8080
     nodePort: 30082
-    targetPort: 8096
+    targetPort: 8080
